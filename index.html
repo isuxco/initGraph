@@ -1,0 +1,58 @@
+<html>
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width" />
+    <title>
+        Prueba de Aceleracion Eje X
+    </title>
+    <!-- Importo el módulo socket.io que tengo en el proyecto -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+    <div id="chart" style="width:80%; height:400px;"></div>
+    <script>
+    
+    var socket = io.connect('http://192.168.7.2:8000');
+    var chart;
+    chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'chart',
+            defaultSeriesType: 'spline',
+            events: {
+                load: function() {
+                    // Cada vez que reciba un valor desde el socket, lo meto en la gráfica
+                    socket.on('temperatureUpdate', function (time, data) {
+                        var series = chart.series[0];
+                        series.addPoint([time, data]);
+                    });
+                }
+            }
+        },
+        rangeSelector : {
+            selected : 100
+        },
+        title: {
+            text: 'MMA72680 Acelerometer Output'
+        },
+        xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 150,
+            maxZoom: 20 * 1000
+        },
+        yAxis: {
+            minPadding: 0.2,
+            maxPadding: 0.2,
+            title: {
+                text: 'Voltaje (V)',
+                margin: 80
+            }
+        },
+        series: [{
+            name: 'Voltaje',
+            data: []
+        }]
+    });
+    </script>
+</body>
+</html>
